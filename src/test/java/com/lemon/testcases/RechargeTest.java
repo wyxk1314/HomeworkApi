@@ -3,7 +3,7 @@ package com.lemon.testcases;
 import com.alibaba.fastjson.JSONObject;
 import com.lemon.common.BaseTest;
 import com.lemon.data.Environment;
-import com.lemon.encryption.RSAManager;
+
 import com.lemon.pojo.ExcelPojo;
 import com.lemon.util.PhoneRandomUtil;
 import io.restassured.response.Response;
@@ -43,27 +43,7 @@ public class RechargeTest extends BaseTest {
         System.out.println("token::"+Environment.envData.get("token"));
     }
 
-    @Test(dataProvider = "getRechargeDatas")
-    public void testRecharge(ExcelPojo excelPojo) throws Exception {
-        //timestamp参数
-        long timestamp = System.currentTimeMillis()/1000;
-        //sign参数
-        //1、取token的前面50位
-        String token = (String) Environment.envData.get("token");
-        String preStr = token.substring(0,50);
-        //2、取到的结果拼接上timestamp
-        String str = preStr+timestamp;
-        //3、通过RSA加密算法对拼接的结果进行加密,得到sign签名
-        String sign = RSAManager.encryptWithBase64(str);
-        //保存到环境变量中
-        Environment.envData.put("timestamp",timestamp);
-        Environment.envData.put("sign",sign);
 
-        excelPojo = casesReplace(excelPojo);
-        Response res = request(excelPojo,"recharge");
-        //断言
-        assertResponse(excelPojo,res);
-    }
 
     @DataProvider
     public Object[] getRechargeDatas() {
